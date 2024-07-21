@@ -14,7 +14,9 @@ struct DownloadView: View {
         VStack {
             switch viewModel.downloadState {
             case .idle:
-                Text("Idle")
+                Button("Download") {
+                    viewModel.scheduleDownload()
+                }
             case .downloading(let progress, let time):
                 Text("Elapsed Seconds: \(time * -1)")
                 Text("Downloading: \(String(format: "%.2f", progress * 100))%")

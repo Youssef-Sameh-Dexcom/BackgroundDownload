@@ -19,11 +19,10 @@ class DownloadViewModel: ObservableObject {
         downloadManager.$downloadState
             .receive(on: DispatchQueue.main)
             .assign(to: \.downloadState, on: self)
-            .store(in: &subscriptions)
-        
-        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification).sink { [unowned self] _ in
-            downloadManager.startBackgroundDownload()
-        }
-        .store(in: &subscriptions)
+            .store(in: &subscriptions)        
+    }
+    
+    func scheduleDownload() {
+        downloadManager.scheduleDownloadTask()
     }
 }

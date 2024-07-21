@@ -13,6 +13,7 @@
 		C622E0802C4977B2006E46A1 /* DownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E07F2C4977B2006E46A1 /* DownloadView.swift */; };
 		C622E0822C4977C4006E46A1 /* DownloadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E0812C4977C4006E46A1 /* DownloadViewModel.swift */; };
 		C622E0842C4977CF006E46A1 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E0832C4977CF006E46A1 /* DownloadManager.swift */; };
+		C66580102C4D4EC60067B36F /* NotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C665800F2C4D4EC60067B36F /* NotificationCenter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		C622E0812C4977C4006E46A1 /* DownloadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewModel.swift; sourceTree = "<group>"; };
 		C622E0832C4977CF006E46A1 /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		C622E0852C49C2AF006E46A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C665800F2C4D4EC60067B36F /* NotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				C622E07F2C4977B2006E46A1 /* DownloadView.swift */,
 				C622E0812C4977C4006E46A1 /* DownloadViewModel.swift */,
 				C622E0832C4977CF006E46A1 /* DownloadManager.swift */,
+				C665800F2C4D4EC60067B36F /* NotificationCenter.swift */,
 			);
 			path = BackgroundDownload;
 			sourceTree = "<group>";
@@ -147,6 +150,7 @@
 			files = (
 				C622E0802C4977B2006E46A1 /* DownloadView.swift in Sources */,
 				C622E0722C497785006E46A1 /* BackgroundDownloadApp.swift in Sources */,
+				C66580102C4D4EC60067B36F /* NotificationCenter.swift in Sources */,
 				C622E0822C4977C4006E46A1 /* DownloadViewModel.swift in Sources */,
 				C622E0842C4977CF006E46A1 /* DownloadManager.swift in Sources */,
 			);

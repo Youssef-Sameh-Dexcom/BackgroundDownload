@@ -11,10 +11,12 @@ private let hugeFile = "https://drive.google.com/uc?export=download&id=1ymaHyZjq
 private let largeFile = "https://drive.google.com/uc?export=download&id=1LKCIX6NPN6pqmc9RwifkOIj9W9HttjCi"
 private let mediumFile = "https://drive.google.com/uc?export=download&id=1OUMC0WxUy6iEyCLvM8RESWllHeC7p9cF"
 private let smallFile = "https://drive.google.com/uc?export=download&id=1ayeLvmGivtZUFeu3_yh8qo99hJNFReYI"
+private let BG_TASK_ID = "com.youssef.BackgroundDownload.BGTask"
 
 import Foundation
-import SwiftUI
 import Combine
+import BackgroundTasks
+
 
 class DownloadManager: NSObject, ObservableObject {
     enum DownloadState {
@@ -26,9 +28,12 @@ class DownloadManager: NSObject, ObservableObject {
     
     @Published private(set) var downloadState: DownloadState = .idle
     
+    private let notificationCenter = NotificationCenter()
+    
     private var backgroundSession: URLSession!
     private let backgroundSessionIdentifier = "com.example.backgroundsession"
     private var subscriptions = Set<AnyCancellable>()
+        
     private var activeSessions = [URLSessionTask]()
     private var startTime = Date()
     
@@ -36,15 +41,28 @@ class DownloadManager: NSObject, ObservableObject {
         super.init()
         let config = URLSessionConfiguration.background(withIdentifier: backgroundSessionIdentifier)
         backgroundSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        notificationCenter.requestNotificationAuthorization()
+        
+        print("hello", UserDefaults.standard.bool(forKey: "start"))
+        registerDownloadTask()
     }
     
-    func startBackgroundDownload() {
+    private func registerDownloadTask() {
+        let isRegistered = BGTaskScheduler.shared.register(forTaskWithIdentifier: BG_TASK_ID, using: nil) { [unowned self] task in
+            startBackgroundDownload(task: task as! BGProcessingTask)
+        }
+        print(isRegistered)
+    }
+    
+    private func startBackgroundDownload(task: BGProcessingTask) {
+        notificationCenter.scheduleNotification(title: "Download Started", description: "Tap to open app")
         if !activeSessions.isEmpty { return }
         guard let url = URL(string: smallFile) else {
             print("Invalid URL")
             return
         }
         startDownload(from: url)
+        task.setTaskCompleted(success: true)
     }
     
     private func startDownload(from url: URL) {
@@ -53,6 +71,19 @@ class DownloadManager: NSObject, ObservableObject {
         downloadTask.resume()
         startTime = Date()
     }
+    
+    func scheduleDownloadTask() {
+        let request = BGProcessingTaskRequest(identifier: BG_TASK_ID)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 30)
+        request.requiresExternalPower = false
+        request.requiresNetworkConnectivity = false
+        
+        do {
+            try BGTaskScheduler.shared.submit(request)
+        } catch {
+            print("Could not reschedule processing task: \(error)")
+        }
+    }
 }
 
 extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
@@ -60,6 +91,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
         if let error = error {
             DispatchQueue.main.async {
                 self.downloadState = .error(error: error, time: self.startTime.timeIntervalSince(Date()))
+                self.notificationCenter.scheduleNotification(title: "Download Failed", description: "Tap to open app")
                 self.activeSessions.removeAll()
             }
         }
@@ -78,11 +110,13 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
             let fileSize = try FileManager.default.attributesOfItem(atPath: destinationURL.path)[.size] as? Int64 ?? 0
             DispatchQueue.main.async {
                 self.downloadState = .completed(url: destinationURL, size: fileSize, time: self.startTime.timeIntervalSince(Date()))
+                self.notificationCenter.scheduleNotification(title: "Download Completed", description: "Tap to open app")
                 self.activeSessions.removeAll()
             }
         } catch {
             DispatchQueue.main.async {
                 self.downloadState = .error(error: error, time: self.startTime.timeIntervalSince(Date()))
+                self.notificationCenter.scheduleNotification(title: "Download Failed", description: "Tap to open app")
                 self.activeSessions.removeAll()
             }
         }
@@ -92,6 +126,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
         if let error = error {
             DispatchQueue.main.async {
                 self.downloadState = .error(error: error, time: self.startTime.timeIntervalSince(Date()))
+                self.notificationCenter.scheduleNotification(title: "Download Failed", description: "Tap to open app")
                 self.activeSessions.removeAll()
             }
         }
