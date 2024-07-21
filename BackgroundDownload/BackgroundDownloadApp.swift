@@ -11,7 +11,7 @@ import SwiftUI
 struct BackgroundDownloadApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DownloadView()
         }
     }
 }

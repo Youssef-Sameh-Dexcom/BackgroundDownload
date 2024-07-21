@@ -8,17 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		C622E0722C497785006E46A1 /* BackgroundDownloadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E0712C497785006E46A1 /* BackgroundDownloadApp.swift */; };
-		C622E0742C497785006E46A1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E0732C497785006E46A1 /* ContentView.swift */; };
 		C622E0762C497786006E46A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C622E0752C497786006E46A1 /* Assets.xcassets */; };
 		C622E0792C497786006E46A1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C622E0782C497786006E46A1 /* Preview Assets.xcassets */; };
+		C622E0802C4977B2006E46A1 /* DownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E07F2C4977B2006E46A1 /* DownloadView.swift */; };
+		C622E0822C4977C4006E46A1 /* DownloadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E0812C4977C4006E46A1 /* DownloadViewModel.swift */; };
+		C622E0842C4977CF006E46A1 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C622E0832C4977CF006E46A1 /* DownloadManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C622E06E2C497785006E46A1 /* BackgroundDownload.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BackgroundDownload.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C622E0712C497785006E46A1 /* BackgroundDownloadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundDownloadApp.swift; sourceTree = "<group>"; };
-		C622E0732C497785006E46A1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C622E0752C497786006E46A1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C622E0782C497786006E46A1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		C622E07F2C4977B2006E46A1 /* DownloadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadView.swift; sourceTree = "<group>"; };
+		C622E0812C4977C4006E46A1 /* DownloadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadViewModel.swift; sourceTree = "<group>"; };
+		C622E0832C4977CF006E46A1 /* DownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
+		C622E0852C49C2AF006E46A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,10 +56,13 @@
 		C622E0702C497785006E46A1 /* BackgroundDownload */ = {
 			isa = PBXGroup;
 			children = (
+				C622E0852C49C2AF006E46A1 /* Info.plist */,
 				C622E0712C497785006E46A1 /* BackgroundDownloadApp.swift */,
-				C622E0732C497785006E46A1 /* ContentView.swift */,
 				C622E0752C497786006E46A1 /* Assets.xcassets */,
 				C622E0772C497786006E46A1 /* Preview Content */,
+				C622E07F2C4977B2006E46A1 /* DownloadView.swift */,
+				C622E0812C4977C4006E46A1 /* DownloadViewModel.swift */,
+				C622E0832C4977CF006E46A1 /* DownloadManager.swift */,
 			);
 			path = BackgroundDownload;
 			sourceTree = "<group>";
@@ -137,8 +145,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C622E0742C497785006E46A1 /* ContentView.swift in Sources */,
+				C622E0802C4977B2006E46A1 /* DownloadView.swift in Sources */,
 				C622E0722C497785006E46A1 /* BackgroundDownloadApp.swift in Sources */,
+				C622E0822C4977C4006E46A1 /* DownloadViewModel.swift in Sources */,
+				C622E0842C4977CF006E46A1 /* DownloadManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,6 +285,7 @@
 				DEVELOPMENT_TEAM = Z5BA64W9WV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BackgroundDownload/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -304,6 +315,7 @@
 				DEVELOPMENT_TEAM = Z5BA64W9WV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BackgroundDownload/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
