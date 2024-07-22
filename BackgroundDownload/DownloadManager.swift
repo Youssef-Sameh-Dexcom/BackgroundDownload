@@ -12,6 +12,8 @@ private let largeFile = "https://drive.google.com/uc?export=download&id=1LKCIX6N
 private let mediumFile = "https://drive.google.com/uc?export=download&id=1OUMC0WxUy6iEyCLvM8RESWllHeC7p9cF"
 private let smallFile = "https://drive.google.com/uc?export=download&id=1ayeLvmGivtZUFeu3_yh8qo99hJNFReYI"
 private let BG_TASK_ID = "com.youssef.BackgroundDownload.BGTask"
+private let TARGET_DATE_KEY = "targetExecutionDate"
+private let TASK_COMPLETED_KEY = "taskCompleted"
 
 import Foundation
 import Combine
@@ -34,7 +36,6 @@ class DownloadManager: NSObject, ObservableObject {
     private let backgroundSessionIdentifier = "com.example.backgroundsession"
     private var subscriptions = Set<AnyCancellable>()
         
-    private var activeSessions = [URLSessionTask]()
     private var startTime = Date()
     
     override init() {
@@ -43,40 +44,64 @@ class DownloadManager: NSObject, ObservableObject {
         backgroundSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         notificationCenter.requestNotificationAuthorization()
         
-        print("hello", UserDefaults.standard.bool(forKey: "start"))
         registerDownloadTask()
+        scheduleCheckPeriodically()
+    }
+    
+    func scheduleDownloadTask() {
+        let threeHours: TimeInterval = 3 * 60 * 60
+        let targetDate = Date().addingTimeInterval(threeHours)
+        UserDefaults.standard.set(targetDate, forKey: TARGET_DATE_KEY)
+        UserDefaults.standard.set(false, forKey: TASK_COMPLETED_KEY)
+        scheduleCheckPeriodically()
     }
     
     private func registerDownloadTask() {
         let isRegistered = BGTaskScheduler.shared.register(forTaskWithIdentifier: BG_TASK_ID, using: nil) { [unowned self] task in
-            startBackgroundDownload(task: task as! BGProcessingTask)
+            handleDownload(task: task as! BGAppRefreshTask)
+            task.expirationHandler = {
+                print("Background task expired")
+                self.scheduleCheckPeriodically()
+            }
         }
         print(isRegistered)
     }
     
-    private func startBackgroundDownload(task: BGProcessingTask) {
-        notificationCenter.scheduleNotification(title: "Download Started", description: "Tap to open app")
-        if !activeSessions.isEmpty { return }
-        guard let url = URL(string: smallFile) else {
-            print("Invalid URL")
-            return
-        }
-        startDownload(from: url)
+    private func handleDownload(task: BGAppRefreshTask) {
+        checkAndPerformDownload()
         task.setTaskCompleted(success: true)
+        let taskCompleted = UserDefaults.standard.bool(forKey: TASK_COMPLETED_KEY)
+        if !taskCompleted {
+            scheduleCheckPeriodically()
+        }
+    }
+    
+    private func checkAndPerformDownload() {
+        notificationCenter.scheduleNotification(title: "Checking", description: "Checking your download status")
+        guard let targetDate = UserDefaults.standard.object(forKey: TARGET_DATE_KEY) as? Date else { return }
+        let taskCompleted = UserDefaults.standard.bool(forKey: TASK_COMPLETED_KEY)
+        
+        if !taskCompleted && Date() >= targetDate {
+            notificationCenter.scheduleNotification(title: "Download Started", description: "Tap to open app")
+            guard let url = URL(string: smallFile) else {
+                print("Invalid URL")
+                return
+            }
+            startDownload(from: url)
+            UserDefaults.standard.set(true, forKey: TASK_COMPLETED_KEY)
+        }
     }
     
     private func startDownload(from url: URL) {
         let downloadTask = backgroundSession.downloadTask(with: url)
-        activeSessions.append(downloadTask)
         downloadTask.resume()
         startTime = Date()
     }
     
-    func scheduleDownloadTask() {
-        let request = BGProcessingTaskRequest(identifier: BG_TASK_ID)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 30)
-        request.requiresExternalPower = false
-        request.requiresNetworkConnectivity = false
+    private func scheduleCheckPeriodically() {
+        let oneHour: TimeInterval = 1 * 60 * 60
+        let request = BGAppRefreshTaskRequest(identifier: BG_TASK_ID)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: oneHour)
         
         do {
             try BGTaskScheduler.shared.submit(request)
@@ -92,7 +117,6 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
             DispatchQueue.main.async {
                 self.downloadState = .error(error: error, time: self.startTime.timeIntervalSince(Date()))
                 self.notificationCenter.scheduleNotification(title: "Download Failed", description: "Tap to open app")
-                self.activeSessions.removeAll()
             }
         }
     }
@@ -111,13 +135,11 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
             DispatchQueue.main.async {
                 self.downloadState = .completed(url: destinationURL, size: fileSize, time: self.startTime.timeIntervalSince(Date()))
                 self.notificationCenter.scheduleNotification(title: "Download Completed", description: "Tap to open app")
-                self.activeSessions.removeAll()
             }
         } catch {
             DispatchQueue.main.async {
                 self.downloadState = .error(error: error, time: self.startTime.timeIntervalSince(Date()))
                 self.notificationCenter.scheduleNotification(title: "Download Failed", description: "Tap to open app")
-                self.activeSessions.removeAll()
             }
         }
     }
@@ -127,7 +149,6 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
             DispatchQueue.main.async {
                 self.downloadState = .error(error: error, time: self.startTime.timeIntervalSince(Date()))
                 self.notificationCenter.scheduleNotification(title: "Download Failed", description: "Tap to open app")
-                self.activeSessions.removeAll()
             }
         }
     }

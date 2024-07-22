@@ -19,13 +19,13 @@ struct NotificationCenter {
         }
     }
     
-    func scheduleNotification(title: String, description: String) {
+    func scheduleNotification(title: String, description: String, after time: TimeInterval = 5) {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = description
         content.sound = UNNotificationSound.default
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: time, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request) { error in
